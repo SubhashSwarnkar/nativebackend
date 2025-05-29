@@ -67,9 +67,17 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const HOST = '127.0.0.1';
 
-server.listen(PORT, HOST, () => {
-  console.log(`Server is running on http://${HOST}:${PORT}`);
-  console.log(`API Documentation available at http://${HOST}:${PORT}/api-docs`);
-}); 
+try {
+  server.listen(PORT, 'localhost', (error) => {
+    if (error) {
+      console.error('Error starting server:', error);
+      return;
+    }
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
+  });
+} catch (error) {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+} 
