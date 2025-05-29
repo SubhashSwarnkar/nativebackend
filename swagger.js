@@ -16,6 +16,10 @@ const options = {
       {
         url: 'http://localhost:5000',
         description: 'Development server'
+      },
+      {
+        url: 'https://nativebackend.onrender.com',
+        description: 'Production server'
       }
     ],
     components: {
