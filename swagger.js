@@ -16,6 +16,10 @@ const options = {
       {
         url: 'http://localhost:5000',
         description: 'Development server'
+      },
+      {
+        url: 'https://nativebackend.onrender.com',
+        description: 'Production server'
       }
     ],
     components: {
@@ -122,26 +126,132 @@ const options = {
         Cart: {
           type: 'object',
           properties: {
-            user: { type: 'string' },
+            _id: { type: 'string' },
+            user: { 
+              type: 'string',
+              description: 'User ID reference'
+            },
             items: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  product: { type: 'string' },
-                  quantity: { type: 'number' },
-                  price: { type: 'number' }
-                }
+                  _id: { type: 'string' },
+                  product: { 
+                    type: 'object',
+                    properties: {
+                      _id: { type: 'string' },
+                      name: { type: 'string' },
+                      price: { type: 'number' },
+                      images: { 
+                        type: 'array',
+                        items: { type: 'string' }
+                      },
+                      stock: { type: 'number' },
+                      category: { 
+                        type: 'string',
+                        enum: ['vegetables', 'fruits', 'grains', 'dairy', 'livestock', 'equipment']
+                      },
+                      unit: {
+                        type: 'string',
+                        enum: ['kg', 'g', 'l', 'ml', 'piece', 'dozen', 'box']
+                      },
+                      minOrderQuantity: { type: 'number' },
+                      maxOrderQuantity: { type: 'number' },
+                      seller: { type: 'string' },
+                      farmLocation: { type: 'string' },
+                      organic: { type: 'boolean' }
+                    }
+                  },
+                  quantity: { 
+                    type: 'number',
+                    minimum: 1
+                  },
+                  price: { 
+                    type: 'number',
+                    minimum: 0
+                  }
+                },
+                required: ['product', 'quantity', 'price']
               }
             },
-            totalAmount: { type: 'number' }
-          }
+            totalAmount: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Total amount of all items in cart'
+            },
+            itemCount: { 
+              type: 'number',
+              minimum: 0,
+              description: 'Total number of items (sum of quantities)'
+            },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          },
+          required: ['user', 'items', 'totalAmount', 'itemCount']
         },
         CartItem: {
           type: 'object',
           properties: {
-            productId: { type: 'string' },
-            quantity: { type: 'number' }
+            productId: { 
+              type: 'string',
+              description: 'The ID of the product to add/update'
+            },
+            quantity: { 
+              type: 'number',
+              minimum: 1,
+              description: 'The quantity to add/update'
+            }
+          },
+          required: ['productId', 'quantity']
+        },
+        CartSummary: {
+          type: 'object',
+          properties: {
+            itemCount: { 
+              type: 'number',
+              description: 'Total number of items in cart'
+            },
+            totalAmount: { 
+              type: 'number',
+              description: 'Total amount of cart'
+            },
+            items: { 
+              type: 'number',
+              description: 'Number of unique products'
+            }
+          }
+        },
+        CartValidation: {
+          type: 'object',
+          properties: {
+            isValid: { 
+              type: 'boolean',
+              description: 'Whether the cart is valid'
+            },
+            issues: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string' },
+                  productName: { type: 'string' },
+                  type: { 
+                    type: 'string',
+                    enum: ['insufficient_stock', 'below_minimum', 'above_maximum', 'price_changed', 'product_not_found']
+                  },
+                  message: { type: 'string' },
+                  requested: { type: 'number' },
+                  available: { type: 'number' },
+                  minimum: { type: 'number' },
+                  maximum: { type: 'number' },
+                  oldPrice: { type: 'number' },
+                  newPrice: { type: 'number' }
+                }
+              }
+            },
+            totalAmount: { type: 'number' },
+            itemCount: { type: 'number' }
           }
         },
         Address: {

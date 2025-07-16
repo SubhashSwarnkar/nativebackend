@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     phone: {
         type: String
     },
@@ -92,12 +96,14 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Hash password before saving
+// Hash password before saving and set isAdmin based on role
 userSchema.pre('save', async function(next) {
     const user = this;
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
     }
+    // Set isAdmin based on role
+    user.isAdmin = user.role === 'admin';
     next();
 });
 
