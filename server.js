@@ -134,7 +134,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 
 try {
-  server.listen(PORT, 'localhost', (error) => {
+  server.listen(PORT, (error) => {
     if (error) {
       console.error('Error starting server:', error);
       return;
